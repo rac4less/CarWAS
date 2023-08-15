@@ -9,7 +9,7 @@ const config = require('./config.json');
 const app = express();
 app.use(cors());
 app.use(express.json());
-const upload = multer({ dest: 'client/src/assets/carimages' }); // Directorio temporal para guardar las imágenes
+const upload = multer({ dest: 'client/src/assets/carimages' });
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -82,7 +82,7 @@ app.post('/send-email', async (req, res) => {
                 to: 'gabriel.jeannot@uao.edu.co',
                 subject: `Car Walk Around from ${fullName}`,
                 html: `<h1>CarWAS - Car Walk Around System</h1>
-            <p>The following information was submitted by ${fullName} on ${new Date()} with email: ${email}, using CarWAS: Car Walk Around System, a website to easily send the information about the rented vehicle before using it. This software was developed for Rent a car 4 less by Gabriel Jeannot.</p>`,
+            <p>The following information was submitted by ${fullName} on ${new Date()} with email: ${email}, using Walk Around 4less: a website to easily send the information about the rented vehicle before using it. This software was developed for Rent a car 4 less by Gabriel Jeannot.</p>`,
                 attachments,
             },
             (err, info) => {
