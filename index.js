@@ -9,6 +9,7 @@ const config = require('./config.json');
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 const upload = multer({ dest: 'client/src/assets/carimages' });
 
 const transporter = nodemailer.createTransport({
@@ -57,9 +58,7 @@ app.post('/upload-image', upload.single('image'), async (req, res) => {
 
 app.post('/send-email', async (req, res) => {
     try {
-        const { fullName, email } = req.body;
-
-        // Obtener las imágenes que ya se han subido al servidor a través de /upload-image
+        const { fullName, email, latitude, longitude, city, region } = req.body;
         const imageFiles = fs.readdirSync(path.join(__dirname, 'client/src/assets/carimages'));
 
         const attachments = imageFiles.map((imageName, index) => {
@@ -69,7 +68,6 @@ app.post('/send-email', async (req, res) => {
             const day = String(now.getDate()).padStart(2, '0');
             const hour = String(now.getHours()).padStart(2, '0');
             const minute = String(now.getMinutes()).padStart(2, '0');
-
             return {
                 filename: `${year}_${month}_${day}_${hour}_${minute}_${index + 1}.jpg`,
                 path: path.join(__dirname, 'client/src/assets/carimages', imageName),
@@ -81,14 +79,14 @@ app.post('/send-email', async (req, res) => {
                 from: `Rac4less ${config.email}`,
                 to: 'gabriel.jeannot@uao.edu.co',
                 subject: `Car Walk Around from ${fullName}`,
-                html: `<h1>CarWAS - Car Walk Around System</h1>
-            <p>The following information was submitted by ${fullName} on ${new Date()} with email: ${email}, using Walk Around 4less: a website to easily send the information about the rented vehicle before using it. This software was developed for Rent a car 4 less by Gabriel Jeannot.</p>`,
+                html: `<h1>Walk Around 4less</h1>
+            <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (paste it on Google Maps) | The following information was submitted by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before using it. This software was developed for Rent a car 4 less by Gabriel Jeannot.</p>`,
                 attachments,
             },
             (err, info) => {
                 if (err) {
-                    console.error('Error sending email:', err);
-                    res.status(500).json({ status: 'Error sending email' });
+                    console.error('Error sending email in backend:', err);
+                    res.status(500).json({ status: 'Error sending email in the backend' });
                 } else {
                     res.json({ status: info.response });
                 }
