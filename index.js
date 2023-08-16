@@ -80,7 +80,8 @@ app.post('/send-email', async (req, res) => {
                 to: 'gabriel.jeannot@uao.edu.co',
                 subject: `Car Walk Around from ${fullName}`,
                 html: `<h1>Walk Around 4less</h1>
-            <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (paste it on Google Maps) | The following information was submitted by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before using it. This software was developed for Rent a car 4 less by Gabriel Jeannot.</p>`,
+            <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (paste it on Google Maps) | The following information was submitted by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before using it. 
+            By sending this email, the user guarantees that he accepts the terms and conditions in which the vehicle is located.</p>`,
                 attachments,
             },
             (err, info) => {
