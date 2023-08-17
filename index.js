@@ -77,11 +77,11 @@ app.post('/send-email', async (req, res) => {
         transporter.sendMail(
             {
                 from: `Rac4less ${config.email}`,
-                to: 'gabriel.jeannot@uao.edu.co, ${email}',
+                to: 'rentacar4lessfll@gmail.com',
                 subject: `Car Walk Around from ${fullName}`,
                 html: `<h1>Walk Around 4less</h1>
             <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (paste it on Google Maps) | The following information was submitted by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before using it. 
-            By sending this email, the user guarantees that he accepts the terms and conditions in which the vehicle is located.</p>`,
+            By sending this email, the user guarantees that he accepts the terms and conditions in which the vehicle is located, and also provides evidence of the car before using it.</p>`,
                 attachments,
             },
             (err, info) => {
