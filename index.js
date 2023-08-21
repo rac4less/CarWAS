@@ -99,4 +99,21 @@ app.post('/send-email', async (req, res) => {
     }
 });
 
+app.post('/delete-images', async (req, res) => {
+    try {
+        const imageFolder = path.join(__dirname, 'client/src/assets/carimages');
+        const imageFiles = fs.readdirSync(imageFolder);
+
+        imageFiles.forEach((imageName) => {
+            const imagePath = path.join(imageFolder, imageName);
+            fs.unlinkSync(imagePath);
+        });
+
+        res.status(200).json({ message: 'Images deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting images:', error);
+        res.status(500).json({ message: 'Error deleting images' });
+    }
+});
+
 app.listen(7000, () => console.log('Running on 7000'));
