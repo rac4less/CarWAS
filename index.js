@@ -77,7 +77,7 @@ app.post('/send-email', async (req, res) => {
         transporter.sendMail(
             {
                 from: `Rac4less ${config.email}`,
-                to: 'customercare@rac4less.com',
+                to: 'rentacar4lessfll@gmail.com',
                 subject: `Car Walk Around from ${fullName}`,
                 html: `<h1>Walk Around 4less</h1>
             <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (paste it on Google Maps) | The following information was submitted by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before using it. 
