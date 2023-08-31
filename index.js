@@ -24,28 +24,16 @@ app.use(express.static(path.join(__dirname, 'client')));
 
 app.post('/upload-image', upload.single('image'), async (req, res) => {
     try {
-        const buttonIndex = req.body.buttonIndex;
-        const { filename, path: imagePath } = req.file;
+        const imageName = req.body.imageName;
+        const { path: imagePath } = req.file;
 
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const imageName = `${year}_${month}_${day}_${buttonIndex}.jpg`;
-
-        const imageFolder = path.join(
-            __dirname,
-            `client/src/assets/carimages`
-        );
+        const imageFolder = path.join(__dirname, 'client/src/assets/carimages');
 
         if (!fs.existsSync(imageFolder)) {
             fs.mkdirSync(imageFolder, { recursive: true });
         }
 
-        const newImagePath = path.join(
-            imageFolder,
-            imageName
-        );
+        const newImagePath = path.join(imageFolder, imageName);
 
         fs.renameSync(imagePath, newImagePath);
 
@@ -58,21 +46,23 @@ app.post('/upload-image', upload.single('image'), async (req, res) => {
 
 app.post('/send-email', async (req, res) => {
     try {
-        const { fullName, email, latitude, longitude, city, region } = req.body;
+        const { fullName, email, latitude, longitude, city, region, userId } = req.body;
         const imageFiles = fs.readdirSync(path.join(__dirname, 'client/src/assets/carimages'));
 
-        const attachments = imageFiles.map((imageName, index) => {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hour = String(now.getHours()).padStart(2, '0');
-            const minute = String(now.getMinutes()).padStart(2, '0');
-            return {
-                filename: `${year}_${month}_${day}_${hour}_${minute}_${index + 1}.jpg`,
-                path: path.join(__dirname, 'client/src/assets/carimages', imageName),
-            };
-        });
+        const attachments = imageFiles
+            .filter(imageName => imageName.startsWith(userId))
+            .map((imageName, index) => {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hour = String(now.getHours()).padStart(2, '0');
+                const minute = String(now.getMinutes()).padStart(2, '0');
+                return {
+                    filename: `${year}_${month}_${day}_${hour}_${minute}_${index + 1}.jpg`,
+                    path: path.join(__dirname, 'client/src/assets/carimages', imageName),
+                };
+            });
 
         transporter.sendMail(
             {
@@ -101,13 +91,16 @@ app.post('/send-email', async (req, res) => {
 
 app.post('/delete-images', async (req, res) => {
     try {
+        const userId = req.body.userId;
         const imageFolder = path.join(__dirname, 'client/src/assets/carimages');
         const imageFiles = fs.readdirSync(imageFolder);
 
-        imageFiles.forEach((imageName) => {
-            const imagePath = path.join(imageFolder, imageName);
-            fs.unlinkSync(imagePath);
-        });
+        imageFiles
+            .filter(imageName => imageName.startsWith(userId))
+            .forEach((imageName) => {
+                const imagePath = path.join(imageFolder, imageName);
+                fs.unlinkSync(imagePath);
+            });
 
         res.status(200).json({ message: 'Images deleted successfully' });
     } catch (error) {
