@@ -6,6 +6,10 @@ const path = require('path');
 const fs = require('fs');
 const config = require('./config.json');
 
+//Alternative config.json
+//"email": "gabriel.jeannot.personal@gmail.com",
+//"Pass": "kylgvxsmugnunbvg"
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -64,14 +68,22 @@ app.post('/send-email', async (req, res) => {
                 };
             });
 
+        const termsAndConditions = fs.readFileSync('t&c.txt', 'utf8');
+
+        var maillist = [
+            'rentacar4lessfll@gmail.com',
+            `${email}`,
+        ];
+
         transporter.sendMail(
             {
                 from: `Rac4less ${config.email}`,
-                to: 'rentacar4lessfll@gmail.com',
+                to: maillist,
                 subject: `Car Walk Around from ${fullName}`,
                 html: `<h1>Walk Around 4less</h1>
-      <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (paste it on Google Maps) | The following information was submitted by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before using it. 
-      By sending this email, the user guarantees that he accepts the <a href="https://drive.google.com/file/d/1LoJia2xn7Jufgd7H4MkftmXZa2ptSiQ6/view?usp=sharing" target="_blank" rel="noopener noreferrer">terms and conditions</a> in which the vehicle is located, and also provides evidence of the car before using it.</p>`,
+      <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (it might not be precise) | This email is sent as confirmation of the car walk around process done by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before using it. 
+      By sending this email, the user guarantees that he accepts the <a href="https://drive.google.com/file/d/1LoJia2xn7Jufgd7H4MkftmXZa2ptSiQ6/view?usp=sharing" target="_blank" rel="noopener noreferrer">terms and conditions</a> in which the vehicle is located, and also provides evidence of the car before using it.</p>
+      <p style="font-size: smaller">${termsAndConditions}</p>`,
                 attachments,
             },
             (err, info) => {
