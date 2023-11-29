@@ -50,7 +50,7 @@ app.post('/upload-image', upload.single('image'), async (req, res) => {
 
 app.post('/send-email', async (req, res) => {
     try {
-        const { fullName, email, latitude, longitude, city, region, userId } = req.body;
+        const { fullName, email, latitude, longitude, city, region, userId, isPickup } = req.body;
         const imageFiles = fs.readdirSync(path.join(__dirname, 'client/src/assets/carimages'));
 
         const attachments = imageFiles
@@ -71,25 +71,37 @@ app.post('/send-email', async (req, res) => {
         const termsAndConditions = fs.readFileSync('t&c.txt', 'utf8');
 
         var maillist = [
-            'rentacar4lessfll@gmail.com',
+            'rentacar4lessmiami@gmail.com',
             `${email}`,
         ];
+
+        let subject, htmlContent;
+        if (isPickup) {
+            subject = `Pickup Car Walk Around from ${fullName}`;
+            htmlContent = `<h1>Walk Around 4less: Pickup</h1>
+          <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (it might not be precise) | This email is sent as confirmation of the car walk around process done by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before and after using it. 
+          By sending this email, the user guarantees that he accepts the <a href="https://drive.google.com/file/d/1LoJia2xn7Jufgd7H4MkftmXZa2ptSiQ6/view?usp=sharing" target="_blank" rel="noopener noreferrer">terms and conditions</a> in which the vehicle is located, and also provides evidence of the car before using it.</p>
+          <p style="font-size: smaller">${termsAndConditions}</p>`;
+        } else {
+            subject = `Return Car Walk Around from ${fullName}`;
+            htmlContent = `<h1>Walk Around 4less: Return</h1>
+          <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (it might not be precise) | This email is sent as confirmation of the car walk around process done by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before and after using it. 
+          By sending this email, the user guarantees that he accepts the <a href="https://drive.google.com/file/d/1LoJia2xn7Jufgd7H4MkftmXZa2ptSiQ6/view?usp=sharing" target="_blank" rel="noopener noreferrer">terms and conditions</a> in which the vehicle is located, and also provides evidence of the car before using it.</p>
+          <p style="font-size: smaller">${termsAndConditions}</p>`;
+        }
 
         transporter.sendMail(
             {
                 from: `Rac4less ${config.email}`,
                 to: maillist,
-                subject: `Car Walk Around from ${fullName}`,
-                html: `<h1>Walk Around 4less</h1>
-      <p>City: ${city} | Region: ${region} | Latitude and longitude: ${latitude},${longitude} (it might not be precise) | This email is sent as confirmation of the car walk around process done by ${fullName} on ${new Date()} with email: ${email} using Walk around 4less: a website to easily send the information about the rented vehicle before using it. 
-      By sending this email, the user guarantees that he accepts the <a href="https://drive.google.com/file/d/1LoJia2xn7Jufgd7H4MkftmXZa2ptSiQ6/view?usp=sharing" target="_blank" rel="noopener noreferrer">terms and conditions</a> in which the vehicle is located, and also provides evidence of the car before using it.</p>
-      <p style="font-size: smaller">${termsAndConditions}</p>`,
+                subject: subject,
+                html: htmlContent,
                 attachments,
             },
             (err, info) => {
                 if (err) {
-                    console.error('Error sending email in backend:', err);
-                    res.status(500).json({ status: 'Error sending email in the backend' });
+                    console.error('Error sending email in backend (server):', err);
+                    res.status(500).json({ status: 'Error sending email in the backend (server)' });
                 } else {
                     res.json({ status: info.response });
                 }
