@@ -113,6 +113,27 @@ app.post('/send-email', async (req, res) => {
     }
 });
 
+app.post('/delete-image', async (req, res) => {
+    try {
+        const { userId, imageSuffix } = req.body;
+        const imageFolder = path.join(__dirname, 'client/src/assets/carimages');
+        const imageFiles = fs.readdirSync(imageFolder);
+        const imageToDelete = imageFiles.find(file => file === imageSuffix);
+
+        if (imageToDelete) {
+            const imagePath = path.join(imageFolder, imageToDelete);
+            fs.unlinkSync(imagePath);
+            res.status(200).json({ message: 'Image deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'Image not found' });
+        }
+    } catch (error) {
+        console.error('Error deleting image:', error);
+        res.status(500).json({ message: 'Error deleting image' });
+    }
+});
+
+
 app.post('/delete-images', async (req, res) => {
     try {
         const userId = req.body.userId;
