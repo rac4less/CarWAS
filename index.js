@@ -71,7 +71,7 @@ app.post('/send-email', async (req, res) => {
         const termsAndConditions = fs.readFileSync('t&c.txt', 'utf8');
 
         var maillist = [
-            'rentacar4lessmiami@gmail.com',
+            'rentacar4lessfll@gmail.com',
             `${email}`,
         ];
 
