@@ -48,6 +48,36 @@ app.post('/upload-image', upload.single('image'), async (req, res) => {
     }
 });
 
+app.post('/send-terms-email', async (req, res) => {
+    try {
+        const { name, email, carId } = req.body;
+        const termsAndConditions = fs.readFileSync('t&c.txt', 'utf8');
+
+        const subject = 'Acceptance of Terms and Conditions';
+        const htmlContent = `Name: ${name}, Email: ${email}, Car ID: ${carId}. The person who submitted this email accepts the terms and conditions from Rent a car 4 less. This guarantees the person is aware of the conditions of the car before using it.\n\n${termsAndConditions}`;
+
+        transporter.sendMail(
+            {
+                from: `Rac4less ${config.email}`,
+                to: ['rentacar4lessfll@gmail.com', email],
+                subject: subject,
+                html: htmlContent,
+            },
+            (err, info) => {
+                if (err) {
+                    console.error('Error sending email in backend (server):', err);
+                    res.status(500).json({ status: 'Error sending email in the backend (server)' });
+                } else {
+                    res.json({ status: info.response });
+                }
+            }
+        );
+    } catch (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ status: 'Error sending email', error: error.message });
+    }
+});
+
 app.post('/send-email', async (req, res) => {
     try {
         const { fullName, email, latitude, longitude, city, region, userId, isPickup } = req.body;
