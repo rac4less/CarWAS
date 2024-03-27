@@ -53,7 +53,7 @@ app.post('/send-terms-email', async (req, res) => {
         const { name, email, carId } = req.body;
         const termsAndConditions = fs.readFileSync('t&c.txt', 'utf8');
 
-        const subject = 'Acceptance of Terms and Conditions';
+        const subject = `T&C accepted by ${name}`;
         const htmlContent = `Name: ${name}, Email: ${email}, Car ID: ${carId}. The person who submitted this email accepts the terms and conditions from Rent a car 4 less. This guarantees the person is aware of the conditions of the car before using it.\n\n${termsAndConditions}`;
 
         transporter.sendMail(
